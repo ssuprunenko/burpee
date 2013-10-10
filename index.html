@@ -1,1 +1,168 @@
-My GitHub Page
+<!DOCTYPE html>
+<html data-framework="emberjs">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>ember.js • Burpee</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+  <!-- <link rel="stylesheet" href="css/normalize.css"> -->
+  <!-- <link rel="stylesheet" href="css/style.css"> -->
+
+  <style type="text/css">
+
+    #nomsTable {
+      margin-top: 15px;
+    }
+
+    #nomsTable td, th {
+      text-align: center;
+      vertical-align: middle;
+      padding: 5px 20px 5px 20px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <script type="text/x-handlebars" id="application">
+    <h1>#Sekta</h1>
+    {{outlet}}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="noms">
+    <section id="sektaapp">
+      <div align="center">
+        <h3>eaten</h3>
+        {{input type="text" id="new-nom" placeholder="что ты опять съела?"
+          value=newTitle action="createNom"}}
+        <button {{action "createNom"}}>add this</button>
+
+
+        <!-- food diary table -->
+        <table border="1" id="nomsTable">
+          <tr>
+            <th>когда</th>
+            <th>что</th>
+            <th>сколько</th>
+            <th>изменить</th>
+          </tr>
+          <tr>
+            <td>9:40</td>
+            <td>nom one</td>
+            <td>150 g</td>
+            <td>edit | del</td>
+          </tr>
+          {{#each itemController="nom"}}
+            <tr>
+              <td>{{timestamp}}</td>
+              <td>{{title}}</td>
+              <td>{{weight}}</td>
+              <td>
+                <button {{action "editNom"}}>edit</button>
+                <button {{action "removeNom"}}>del</button>
+              </td>
+            </tr>
+          {{/each}}
+        </table>
+      </div>
+
+    </section>
+  </script>
+
+
+  <script src="js/libs/jquery/jquery.js"></script>
+  <script src="js/libs/handlebars/handlebars.js"></script>
+  <script src="js/libs/ember/ember.js"></script>
+  <script src="js/libs/ember/ember-data.js"></script>
+  <!-- // <script src="js/app.js"></script> -->
+
+  <script>
+
+    window.Noms = Ember.Application.create({
+      LOG_TRANSITIONS: true,
+      LOG_BINDINGS: true,
+      LOG_VIEW_LOOKUPS: true,
+      LOG_STACKTRACE_ON_DEPRECATION: true,
+      LOG_VERSION: true,
+      debugMode: true
+    });
+
+
+    // Route
+    Noms.Router.map(function() {
+      this.resource('noms', {path: '/'});
+    });
+
+    Noms.NomsRoute = Ember.Route.extend({
+      model: function() {
+        return this.store.find('nom');
+      }
+    });
+
+
+    // Models
+    Noms.Nom = DS.Model.extend({
+      timestamp: DS.attr('string'),
+      title: DS.attr('string'),
+      weight: DS.attr('number')
+    });
+
+    Noms.ApplicationAdapter = DS.FixtureAdapter.extend();
+
+    Noms.Nom.FIXTURES = [
+      {
+        id: 41,
+        timestamp: '19:00',
+        title: 'Tea',
+        weight: 350
+      },
+      {
+        id: 42,
+        timestamp: '19:05',
+        title: 'Cake',
+        weight: 100
+      }
+    ];
+
+
+  //   // Views
+
+    // Controllers
+    Noms.NomsController = Ember.ArrayController.extend({
+      actions: {
+        createNom: function() {
+          var title = this.get('newTitle');
+          if (!title.trim()) {return;}
+
+          var time = new Date();
+
+          var nom = this.store.createRecord('nom', {
+            timestamp: time.getHours().toString() + ':' +
+                       time.getMinutes().toString(),
+            title: title,
+            weight: 100
+          });
+
+          this.set('newTitle', '');
+
+          nom.save();
+        }
+      }
+    });
+
+    Noms.NomController = Ember.ObjectController.extend({
+      actions: {
+        removeNom: function() {
+          var nom = this.get('model');
+
+          nom.deleteRecord();
+          nom.save();
+        }
+      }
+    });
+
+  </script>
+  <!--script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script-->
+
+</body>
+</html>
