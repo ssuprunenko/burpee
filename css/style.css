@@ -9,5 +9,10 @@
 
 #nomsLayout {
   width: 60%;
-  margin: 0 auto;
+  /*margin: 0 auto;*/
+}
+
+.container {
+  max-width: 720px !important;
+  min-width: 350px !important;
 }

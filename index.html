@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>#Sekta • Burpee</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
   <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -21,7 +22,7 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="noms">
-      <section align="center" id="nomsLayout">
+      <div class="container" id="nomsLayout">
         <div class="input-group">
           {{input type="text" class="form-control" placeholder="что ты опять съела?"
             value=newTitle action="createNom"}}
@@ -37,38 +38,40 @@
 
 
         <!-- food diary table -->
-        <table class="table table-bordered" id="nomsTable">
-          <tr>
-            <th>когда</th>
-            <th>что</th>
-            <th>сколько</th>
-            <th>изменить</th>
-          </tr>
-          <tr>
-            <td>9:40</td>
-            <td>nom one</td>
-            <td>150 g</td>
-            <td><a>edit</a> | <a>del</a></td>
-          </tr>
-          {{#each itemController="nom"}}
+        <div class="table-responsive">
+          <table class="table table-hover" id="nomsTable">
             <tr>
-              <td>{{timestamp}}</td>
-              <td>{{title}}</td>
-              <td>{{weight}}</td>
-              <td>
-                <div class="btn-group" btn-group-sm>
-                  <a class="btn btn-default" {{action "editNom"}}>
-                    <i class="icon-edit"></i>
-                  </a>
-                  <a class="btn btn-danger" {{action "removeNom"}}>
-                    <i class="icon-trash"></i>
-                  </a>
-                </div>
-              </td>
+              <th>когда</th>
+              <th>что</th>
+              <th>сколько</th>
+              <th>изменить</th>
             </tr>
-          {{/each}}
-        </table>
-      </section>
+            <tr>
+              <td>9:40</td>
+              <td>nom one</td>
+              <td>150 g</td>
+              <td><a>edit</a> | <a>del</a></td>
+            </tr>
+            {{#each itemController="nom"}}
+              <tr>
+                <td>{{timestamp}}</td>
+                <td>{{title}}</td>
+                <td>{{weight}}</td>
+                <td>
+                  <div class="btn-group" btn-group-sm>
+                    <a class="btn btn-default" {{action "editNom"}}>
+                      <i class="icon-edit"></i>
+                    </a>
+                    <a class="btn btn-danger" {{action "removeNom"}}>
+                      <i class="icon-trash"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {{/each}}
+          </table>
+        </div>
+      </div>
 
       <!-- График -->
       <div id="vis" align="center"></div>
