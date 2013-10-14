@@ -5,6 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>ember.js • Burpee</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="js/libs/font-awesome/css/font-awesome.min.css">
   <!-- <link rel="stylesheet" href="css/normalize.css"> -->
   <!-- <link rel="stylesheet" href="css/style.css"> -->
 
@@ -20,26 +22,42 @@
       padding: 5px 20px 5px 20px;
     }
 
+    .foodDiary {
+      padding-top: 20px;
+      width: 500px;
+      margin: 0 auto;
+    }
+
   </style>
 </head>
 <body>
 
   <script type="text/x-handlebars" id="application">
-    <h1>#Sekta</h1>
+    <div class="page-header">
+        <h1 align="center">#Sekta</h1>
+    </div>
     {{outlet}}
   </script>
 
   <script type="text/x-handlebars" data-template-name="noms">
     <section id="sektaapp">
-      <div align="center">
-        <h3>eaten</h3>
-        {{input type="text" id="new-nom" placeholder="что ты опять съела?"
-          value=newTitle action="createNom"}}
-        <button {{action "createNom"}}>add this</button>
+      <div align="center" class="container foodDiary">
+        <div class="input-group">
+          {{input type="text" class="form-control" id="new-nom" placeholder="что ты опять съела?"
+            value=newTitle action="createNom"}}
+          <span class="input-group-btn"
+            <!-- //div class="btn-group" -->
+              <a class="btn btn-success" {{action "createNom"}}>
+                <i class="icon-plus"></i>
+              </a>
+              <!--//button type="button" class="btn btn-default" {{action "createChart"}}>create chart</button-->
+            <!--//div-->
+          </span>
+        </div>
 
 
         <!-- food diary table -->
-        <table border="1" id="nomsTable">
+        <table class="table table-bordered" id="nomsTable">
           <tr>
             <th>когда</th>
             <th>что</th>
@@ -50,7 +68,7 @@
             <td>9:40</td>
             <td>nom one</td>
             <td>150 g</td>
-            <td>edit | del</td>
+            <td><a>edit</a> | <a>del</a></td>
           </tr>
           {{#each itemController="nom"}}
             <tr>
@@ -58,13 +76,20 @@
               <td>{{title}}</td>
               <td>{{weight}}</td>
               <td>
-                <button {{action "editNom"}}>edit</button>
-                <button {{action "removeNom"}}>del</button>
+                <div class="btn-group" btn-group-sm>
+                  <a class="btn btn-default" {{action "editNom"}}>
+                    <i class="icon-edit"></i>
+                  </a>
+                  <a class="btn btn-danger" {{action "removeNom"}}>
+                    <i class="icon-trash"></i>
+                  </a>
+                </div>
               </td>
             </tr>
           {{/each}}
         </table>
       </div>
+      <div id="vis" align="center"></div>
 
     </section>
   </script>
@@ -74,6 +99,8 @@
   <script src="js/libs/handlebars/handlebars.js"></script>
   <script src="js/libs/ember/ember.js"></script>
   <script src="js/libs/ember/ember-data.js"></script>
+  <script src="js/libs/d3/d3.js"></script>
+  <script src="js/libs/bootstrap/bootstrap.js"></script>
   <!-- // <script src="js/app.js"></script> -->
 
   <script>
@@ -107,6 +134,10 @@
       weight: DS.attr('number')
     });
 
+    // Noms.vis = Ember.View.create({
+    //   sum: Ember.Binding.oneWay('Noms.nom.weight')
+    // });
+
     Noms.ApplicationAdapter = DS.FixtureAdapter.extend();
 
     Noms.Nom.FIXTURES = [
@@ -118,7 +149,7 @@
       },
       {
         id: 42,
-        timestamp: '19:05',
+        timestamp: '19:00',
         title: 'Cake',
         weight: 100
       }
@@ -132,6 +163,7 @@
       actions: {
         createNom: function() {
           var title = this.get('newTitle');
+          this.set('newTitle', '');
           if (!title.trim()) {return;}
 
           var time = new Date();
@@ -143,9 +175,72 @@
             weight: 100
           });
 
-          this.set('newTitle', '');
-
           nom.save();
+        },
+        createChart: function() {
+          console.log(Noms.Nom.FIXTURES);
+          // data = Noms.Nom.FIXTURES.getEach('weight');
+          // console.log(data);
+
+          var data = d3.nest()
+            .key(function(d) {return d.weight;})
+            .entries(Noms.Nom.FIXTURES.getEach('weight'));
+
+          console.log(data);
+
+          var width = 500,
+            height = 250;
+
+          var x = d3.scale.linear()
+            .domain([0, data.length - 1])
+            .range([0, width]);
+
+          var y = d3.scale.linear()
+            .domain([d3.min(data), d3.max(data)])
+            .range([height, 0]);
+
+          var line = d3.svg.line()
+            .interpolate("basic")
+            .x(function(d, i) {return x(i);})
+            .y(function(d, i) {return y(d);});
+
+          var svg = d3.select("#vis")
+            .append("svg:svg")
+            .attr('width', width)
+            .attr('height', height)
+            // .append('svg:g')
+            .attr('id', 'chart')
+            .attr("transform", "translate(" + width / 2 + "," + (height / 2) + ")");
+
+          var series = svg.selectAll('g.series')
+            .data(d3.keys(data))
+            .enter()
+            .append('g')
+            .attr('class', 'series');
+
+          // var weightLine = svg.selectAll(".weight")
+          //   .data(data)
+          // .enter().append("g")
+          //   .append("path")
+          //   .attr("d", function(d) {return line(d);})
+          //   .style("stroke", "black");
+
+          var weightLine = series.selectAll('.line')
+            .data(d3.keys(data))
+            .enter()
+            .append('svg:path')
+            .attr('d', function(d) {
+              return line(data[d]);
+            })
+            .attr('class', 'line');
+
+
+
+
+
+          // console.log(data);
+
+
         }
       }
     });
@@ -162,7 +257,7 @@
     });
 
   </script>
-  <!--script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script-->
+  <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
 
 </body>
 </html>
