@@ -1,0 +1,13 @@
+#nomsTable {
+  margin-top: 1%;
+}
+
+#nomsTable td, th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#nomsLayout {
+  width: 60%;
+  margin: 0 auto;
+}
