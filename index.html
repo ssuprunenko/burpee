@@ -3,47 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>ember.js • Burpee</title>
+  <title>#Sekta • Burpee</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="js/libs/font-awesome/css/font-awesome.min.css">
-  <!-- <link rel="stylesheet" href="css/normalize.css"> -->
-  <!-- <link rel="stylesheet" href="css/style.css"> -->
-
-  <style type="text/css">
-
-    #nomsTable {
-      margin-top: 15px;
-    }
-
-    #nomsTable td, th {
-      text-align: center;
-      vertical-align: middle;
-      padding: 5px 20px 5px 20px;
-    }
-
-    .foodDiary {
-      padding-top: 20px;
-      width: 500px;
-      margin: 0 auto;
-    }
-
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <script type="text/x-handlebars" id="application">
-    <div class="page-header">
-        <h1 align="center">#Sekta</h1>
+    <div>
+      <div class="page-header">
+          <h1 align="center">#Sekta</h1>
+      </div>
+      {{outlet}}
     </div>
-    {{outlet}}
   </script>
 
   <script type="text/x-handlebars" data-template-name="noms">
-    <section id="sektaapp">
-      <div align="center" class="container foodDiary">
+      <section align="center" id="nomsLayout">
         <div class="input-group">
-          {{input type="text" class="form-control" id="new-nom" placeholder="что ты опять съела?"
+          {{input type="text" class="form-control" placeholder="что ты опять съела?"
             value=newTitle action="createNom"}}
           <span class="input-group-btn"
             <!-- //div class="btn-group" -->
@@ -88,19 +68,19 @@
             </tr>
           {{/each}}
         </table>
-      </div>
-      <div id="vis" align="center"></div>
+      </section>
 
-    </section>
+      <!-- График -->
+      <div id="vis" align="center"></div>
   </script>
 
 
-  <script src="js/libs/jquery/jquery.js"></script>
+  <script src="js/libs/jquery/jquery.min.js"></script>
   <script src="js/libs/handlebars/handlebars.js"></script>
-  <script src="js/libs/ember/ember.js"></script>
-  <script src="js/libs/ember/ember-data.js"></script>
-  <script src="js/libs/d3/d3.js"></script>
-  <script src="js/libs/bootstrap/bootstrap.js"></script>
+  <script src="js/libs/ember/ember.min.js"></script>
+  <script src="js/libs/ember/ember-data.min.js"></script>
+  <script src="js/libs/d3/d3.min.js"></script>
+  <script src="js/libs/bootstrap/bootstrap.min.js"></script>
   <!-- // <script src="js/app.js"></script> -->
 
   <script>
@@ -257,7 +237,7 @@
     });
 
   </script>
-  <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+  <!-- script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script -->
 
 </body>
 </html>
