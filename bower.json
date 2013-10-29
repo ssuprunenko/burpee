@@ -1,0 +1,13 @@
+{
+  "name": "burpee-emberjs",
+  "version": "0.0.1",
+  "dependencies": {
+    "jquery": "latest",
+    "bootstrap": "latest",
+    "handlebars": "latest",
+    "ember": "latest",
+    "ember-localstorage-adapter": "latest",
+    "font-awesome": "latest",
+    "moment": "latest"
+  }
+}

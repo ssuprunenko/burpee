@@ -13,24 +13,27 @@
 <body>
 
   <script type="text/x-handlebars" id="application">
-      <header class="page-header" id="header">
-          <h1 align="center">#Sekta</h1>
-      </header>
+    <header class="page-header" id="header">
+      <h1 align="center">#Sekta</h1>
+    </header>
 
-    <div class="row">
-      <!-- Navigation Buttons -->
-      <div class="col-md-2" style="max-width: 200px;">
-        <ul class="nav nav-pills nav-stacked">
-          <li class="active" id="nomsButton">{{#linkTo 'noms'}}Food Diary{{/linkTo}}</li>
-          <li id="chartButton">{{#linkTo 'chart'}}Graph{{/linkTo}}</li>
-        <ul>
-      </div>
+      <div class="row">
+        <div class="col-md-2">
+          <ul class="nav">
+            <li class="active" id="nomsButton">
+              {{#linkTo 'noms'}}<i class="fa fa-cutlery fa-fw"></i> Food Diary{{/linkTo}}
+            </li>
+            <li>
+              {{#linkTo 'user'}}<i class="fa fa-user fa-fw"></i> Profile{{/linkTo}}
+            </li>
+          </ul>
+        </div>
 
-      <!-- Content -->
-      <div class="col-md-9">
-        {{outlet}}
+        <div class="col-md-10">
+          {{outlet}}
+        </div>
+
       </div>
-    </div>
   </script>
 
   <script type="text/x-handlebars" data-template-name="noms">
@@ -38,12 +41,10 @@
         <div class="input-group">
           {{input type="text" class="form-control" placeholder="что ты опять съела?"
             value=newTitle action="createNom"}}
-          <span class="input-group-btn"
-            <!-- //div class="btn-group" -->
-              <a class="btn btn-success" {{action "createNom"}}>
-                <i class="icon-plus"></i>
-              </a>
-            <!--//div-->
+          <span class="input-group-btn">
+            <a class="btn btn-success" {{action "createNom"}}>
+              <i class="fa fa-plus"></i>
+            </a>
           </span>
         </div>
 
@@ -67,8 +68,8 @@
 
           {{#each itemController="nom"}}
             <tr>
-                <td>{{timestamp}}</td>
-                <td style="min-width: 70px; max-width: 150px;" {{action "editNom" on="doubleClick"}}>
+                <td>{{time}}</td>
+                <td {{action "editNom" on="doubleClick"}}>
                   {{#if isEditing}}
                     {{input class="form-control" value=title action="editNom"}}
                   {{else}}
@@ -76,24 +77,25 @@
                   {{/if}}
                 </td>
                 <td {{action "editNom" on="doubleClick"}}>{{weight}}</td>
+                <td>{{author.firstName}}</td>
                 <td>
-                  <div style="width: 80px;" class="btn-group" btn-group-sm>
+                  <div class="btn-group" btn-group-sm>
                     <a class="btn btn-default" {{action "editNom"}}>
-                      <i class="icon-edit"></i>
+                      <i class="fa fa-pencil-square-o"></i>
                     </a>
                     <a class="btn btn-danger" {{action "removeNom"}}>
-                      <i class="icon-trash"></i>
+                      <i class="fa fa-trash-o"></i>
                     </a>
                   </div>
                 </td>
-
             </tr>
           {{/each}}
+          <ul id="insertWeightHere"></ul>
         </table>
       </div>
   </script>
 
-  <script type="text/x-handlebars" data-template-name="chart">
+  <script type="text/x-handlebars" data-template-name="activity">
     <!-- График -->
     <div class="container">
       <button type="button" class="btn btn-success" {{action "createChart"}}>Create chart</button>
@@ -101,19 +103,37 @@
     </div>
   </script>
 
+  <script type="text/x-handlebars" data-template-name="user">
+    <div class="container">
+      <a class="btn btn-success" {{action "showWeight"}}>
+        <i class="fa fa-plus"></i>
+      </a>
+      {{#each}}
+        <h2>
+          {{#each nom in noms}}
+            Too much {{nom.title}},
+          {{/each}}
+          {{firstName}}
+        </h2>
+      {{/each}}
+    </div>
+  </script>
+
 
   <script src="js/libs/jquery/jquery.min.js"></script>
+  <!-- // <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script> -->
   <script src="js/libs/handlebars/handlebars.js"></script>
   <script src="js/libs/ember/ember.min.js"></script>
   <script src="js/libs/ember/ember-data.min.js"></script>
   <script src="js/libs/d3/d3.min.js"></script>
   <script src="js/libs/bootstrap/bootstrap.min.js"></script>
-  <!-- // <script src="js/libs/ember-renderspeed.js"></script> -->
+  <script src="js/libs/moment/min/moment.min.js"></script>
+  <script src="js/libs/ember-renderspeed.js"></script>
   <!-- // <script src="js/app.js"></script> -->
 
   <script>
 
-    window.Noms = Ember.Application.create({
+    window.App = Ember.Application.create({
       LOG_TRANSITIONS: true,
       LOG_BINDINGS: true,
       LOG_VIEW_LOOKUPS: true,
@@ -124,65 +144,144 @@
 
 
     // Route
-    Noms.Router.map(function() {
-      this.resource('noms', {path: '/'});
-      this.resource('chart', {path: '/chart'});
+    App.IndexRoute = Ember.Route.extend({
+      redirect: function () {
+          this.transitionTo("noms");
+      }
     });
 
-    Noms.NomsRoute = Ember.Route.extend({
+    App.Router.map(function() {
+      this.resource('noms', {path: '/noms'});
+      this.resource('user', {path: '/user'});
+    });
+
+    App.NomsRoute = Ember.Route.extend({
       model: function() {
         return this.store.find('nom');
       }
     });
 
+    // App.UserRoute = Ember.Route.extend({
+    //   model: function() {
+    //     return this.store.find('user');
+    //   }
+    // });
 
-    // Models
-    Noms.Nom = DS.Model.extend({
-      timestamp: DS.attr('string'),
-      title: DS.attr('string'),
-      weight: DS.attr('number')
+    App.UserRoute = Ember.Route.extend({
+      // model: function() {
+      //   return this.store.createRecord('user', {
+      //     id: 1,
+      //     firstName: 'Sergey',
+      //     lastName: 'Suprunenko',
+      //     vkID: 128606
+      //   })
+      // },
+      model: function() {
+        return this.store.find('user');
+      },
+
+      setupController: function(controller, user) {
+        controller.set('model', user)
+      }
     });
 
-    Noms.ApplicationAdapter = DS.FixtureAdapter.extend();
 
-    Noms.Nom.FIXTURES = [
+    // Models
+    App.Nom = DS.Model.extend({
+      timestamp: DS.attr('date'),
+      time: DS.attr('string'),
+      title: DS.attr('string'),
+      weight: DS.attr('number'),
+      author: DS.belongsTo('user')
+    });
+
+    App.User = DS.Model.extend({
+      firstName: DS.attr('string'),
+      lastName: DS.attr('string'),
+      vkID: DS.attr('number'),
+      noms: DS.hasMany('nom')
+    });
+
+
+    App.ApplicationAdapter = DS.FixtureAdapter.extend();
+
+    App.Nom.FIXTURES = [
       {
         id: 41,
-        timestamp: '19:00',
+        timestamp: Date(),
+        time: '10:15',
         title: 'Tea',
-        weight: 350
+        weight: 350,
+        author: 1
       },
       {
         id: 42,
-        timestamp: '19:00',
+        timestamp: Date(),
+        time: '19:00',
         title: 'Cake',
         weight: 100
       }
     ];
 
+    App.User.FIXTURES = [{
+      id: 1,
+      firstName: 'Sergey',
+      lastName: 'Suprunenko',
+      vkID: 128606,
+      noms: [41]
+    }
+    ];
+
+
+    App.UserController = Ember.ArrayController.extend({
+      isAdmin: false,
+      // needs: ['noms'],
+
+      // actions: {
+      //   showWeight: function() {
+      //     var weight = this.get(this.firstName);
+      //     console.log(weight);
+      //   }
+      // }
+    });
+
+
     // Controllers
-    Noms.NomsController = Ember.ArrayController.extend({
+    App.NomsController = Ember.ArrayController.extend({
       actions: {
         createNom: function() {
           var title = this.get('newTitle');
           this.set('newTitle', '');
           if (!title.trim()) {return;}
 
-          var time = new Date();
+          var currentTime = new Date();
 
           var nom = this.store.createRecord('nom', {
-            timestamp: time.getHours().toString() + ':' +
-                       time.getMinutes().toString(),
+            timestamp: currentTime,
+            time: moment(currentTime).format("HH:mm"),
             title: title,
-            weight: 100
+            weight: Math.round(Math.random()*1000)
           });
 
           nom.save();
+
+          var myarray = [];
+          var itemWeight;
+          $("#insertWeightHere").empty();
+          var items = this.get('store').filter('nom', function(record){return record.get('weight') > 100}).content;
+          for (var i = items.length - 1; i >= 0; i--) {
+            itemWeight = items[i]._data.weight;
+            if (itemWeight) {
+              myarray.push(itemWeight);
+              $("#insertWeightHere").append("<li>"+itemWeight+"</li>");
+            }
+          };
+          console.log(myarray);
         }
       }
     });
 
-    Noms.NomController = Ember.ObjectController.extend({
+    App.NomController = Ember.ObjectController.extend({
       isEditing: false,
 
       actions: {
@@ -202,63 +301,63 @@
       },
     });
 
-    Noms.ChartController = Ember.ObjectController.extend({
-      actions: {
-        createChart: function() {
-          // data = Noms.Nom.FIXTURES.getEach('weight');
-          // console.log(data);
+    // App.ChartController = Ember.ObjectController.extend({
+    //   actions: {
+    //     createChart: function() {
+    //       // data = App.Nom.FIXTURES.getEach('weight');
+    //       // console.log(data);
 
-          var data = [5, 10, 15, 20];
+    //       var data = [5, 10, 15, 20];
 
-          var width = 500,
-            height = 250;
+    //       var width = 500,
+    //         height = 250;
 
-          var x = d3.scale.linear()
-            .domain([0, data.length])
-            .range([0, width]);
+    //       var x = d3.scale.linear()
+    //         .domain([0, data.length])
+    //         .range([0, width]);
 
-          var y = d3.scale.linear()
-            .domain([d3.min(data), d3.max(data)])
-            .range([height, 0]);
+    //       var y = d3.scale.linear()
+    //         .domain([d3.min(data), d3.max(data)])
+    //         .range([height, 0]);
 
-          var line = d3.svg.line()
-            .x(function(d, i) {return x(i);})
-            .y(function(d, i) {return y(d);});
+    //       var line = d3.svg.line()
+    //         .x(function(d, i) {return x(i);})
+    //         .y(function(d, i) {return y(d);});
 
-          var svg = d3.select("#chart")
-            .append("svg:svg")
-            .attr('width', width)
-            .attr('height', height)
-            .attr("transform", "translate(" + width / 2 + "," + (height / 2) + ")");
+    //       var svg = d3.select("#chart")
+    //         .append("svg:svg")
+    //         .attr('width', width)
+    //         .attr('height', height)
+    //         .attr("transform", "translate(" + width / 2 + "," + (height / 2) + ")");
 
-          // var series = svg.selectAll('g.series')
-          //   .data(d3.keys(data))
-          //   .enter()
-          //   .append('g')
-          //   .attr('class', 'series');
+    //       // var series = svg.selectAll('g.series')
+    //       //   .data(d3.keys(data))
+    //       //   .enter()
+    //       //   .append('g')
+    //       //   .attr('class', 'series');
 
-          var weightLine = svg.selectAll(".weight")
-            .data(data)
-          .enter().append("g")
-            .append("path")
-            .attr("d", function(d) {return line(d);})
-            .style("stroke", "black");
+    //       var weightLine = svg.selectAll(".weight")
+    //         .data(data)
+    //       .enter().append("g")
+    //         .append("path")
+    //         .attr("d", function(d) {return line(d);})
+    //         .style("stroke", "black");
 
-          // var weightLine = series.selectAll('.line')
-          //   .data(d3.keys(data))
-          //   .enter()
-          //   .append('svg:path')
-          //   .attr('d', function(d) {
-          //     return line(data[d]);
-          //   })
-          //   .attr('class', 'line');
-            // console.log(data);
-          }
-        }
-    })
+    //       // var weightLine = series.selectAll('.line')
+    //       //   .data(d3.keys(data))
+    //       //   .enter()
+    //       //   .append('svg:path')
+    //       //   .attr('d', function(d) {
+    //       //     return line(data[d]);
+    //       //   })
+    //       //   .attr('class', 'line');
+    //         // console.log(data);
+    //       }
+    //     }
+    // })
 
   </script>
-  <!-- script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script -->
+  <!-- script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script-->
 
 </body>
 </html>
