@@ -18,7 +18,7 @@
     </header>
 
       <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-2" id="menu-col">
           <ul class="nav">
             <li class="active" id="nomsButton">
               {{#linkTo 'noms'}}<i class="fa fa-cutlery fa-fw"></i> Food Diary{{/linkTo}}
@@ -29,7 +29,7 @@
           </ul>
         </div>
 
-        <div class="col-md-10">
+        <div class="col-md-10" id="app-col">
           {{outlet}}
         </div>
 
@@ -38,7 +38,7 @@
 
   <script type="text/x-handlebars" data-template-name="noms">
       <div class="container" id="nomsLayout">
-        <div class="input-group">
+        <div class="input-group nomsTableItem">
           {{input type="text" class="form-control" placeholder="что ты опять съела?"
             value=newTitle action="createNom"}}
           <span class="input-group-btn">
@@ -51,21 +51,6 @@
 
         <!-- food diary table -->
         <table class="table table-hover" id="nomsTable">
-
-          <!-- tr>
-            <th>когда</th>
-            <th>что</th>
-            <th>сколько</th>
-            <th>изменить</th>
-          </tr>
-          <tr>
-            <td>9:40</td>
-            <td>{{input type="text" class="form-control" placeholder="что ты опять съела?"
-          value=newTitle action="createNom"}}</td>
-            <td>150 g</td>
-            <td><a>edit</a> | <a>del</a></td>
-          </tr -->
-
           {{#each itemController="nom"}}
             <tr>
                 <td>{{time}}</td>
@@ -273,7 +258,7 @@
             itemWeight = items[i]._data.weight;
             if (itemWeight) {
               myarray.push(itemWeight);
-              $("#insertWeightHere").append("<li>"+itemWeight+"</li>");
+              $("#insertWeightHere").append("<li class='weightItem'>"+itemWeight+"</li>");
             }
           };
           console.log(myarray);
