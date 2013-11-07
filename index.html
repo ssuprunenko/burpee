@@ -54,18 +54,18 @@
           {{#each itemController="nom"}}
             <tr>
                 <td>{{time}}</td>
-                <td {{action "editNom" on="doubleClick"}}>
+                <td {{action toggleProperty "isEditing" on="doubleClick"}}>
                   {{#if isEditing}}
                     {{input class="form-control" value=title action="editNom"}}
                   {{else}}
                     {{title}}
                   {{/if}}
                 </td>
-                <td {{action "editNom" on="doubleClick"}}>{{weight}}</td>
+                <td {{action toggleProperty "isEditing" on="doubleClick"}}>{{weight}}</td>
                 <td>{{author.firstName}}</td>
                 <td>
                   <div class="btn-group" btn-group-sm>
-                    <a class="btn btn-default" {{action "editNom"}}>
+                    <a class="btn btn-default" {{action toggleProperty "isEditing"}}>
                       <i class="fa fa-pencil-square-o"></i>
                     </a>
                     <a class="btn btn-danger" {{action "removeNom"}}>
@@ -271,10 +271,7 @@
 
       actions: {
         editNom: function() {
-          if (this.isEditing === true)
-            this.set('isEditing', false);
-          else
-            this.set('isEditing', true);
+          this.toggleProperty("isEditing");
         },
 
         removeNom: function() {
@@ -283,7 +280,7 @@
           nom.deleteRecord();
           nom.save();
         }
-      },
+      }
     });
 
     // App.ChartController = Ember.ObjectController.extend({
