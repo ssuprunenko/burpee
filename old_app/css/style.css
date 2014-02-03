@@ -1,0 +1,67 @@
+html, body {
+    font-size:100%
+}
+body {
+    color:#222;
+    padding:0;
+    margin:0;
+    font-family:"Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+    font-weight:normal;
+    font-style:normal;
+    line-height:1;
+    position:relative
+}
+#nomsTable {
+    margin-top: 1%;
+}
+#nomsTable td, th {
+    text-align: center;
+    vertical-align: middle;
+}
+#nomsLayout {
+    /*width: 60%;*/
+    /*margin: 0 auto;*/
+}
+.row {
+    width:100%;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:0;
+    margin-bottom:0;
+    max-width:70em;
+    *zoom:1
+}
+.nav li a {
+    display:block;
+    color:#2ba6cb
+}
+.nav li.active>a:first-child {
+    color:#4d4d4d;
+    font-weight:bold
+}
+.nav li:hover {
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    -ms-border-radius:5px;
+    -o-border-radius:5px;
+    border-radius:5px
+}
+.nav a {
+    color:#afb6bf;
+    font-weight:bold
+}
+.nav a:hover {
+    color:#28bfa4
+}
+.nav .active a {
+    color:#545862
+}
+.container {
+    position:relative;
+    width:95%;
+    max-width: 50em;
+    min-width: 20em;
+}
+.btn-group {
+	min-width: 5em;
+}
